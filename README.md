@@ -52,7 +52,7 @@ const wbglBridge = new WBGLBridgeSDK(config);
 
 
 // Get bridge health:
-const health = await getBridgeHealth()
+const health = await wbglBridge.getBridgeHealth()
 console.log(health) // "ok"
 
 // Use the SDK methods to interact with the Bitgesell WBGL Bridge
