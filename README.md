@@ -1,4 +1,4 @@
-# Bitgesell WGLBridge SDK
+# Bitgesell WBGLBridge SDK
 <img src="Icon.png" style="height: 60px;"/>
 
 This is a tiny wrapper around the WBGL bridge for use on the Nodejs backend
