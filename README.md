@@ -47,7 +47,7 @@ const config = {
   chainId: 1
 }
 
-// Instantiate the SDK with your API key
+// Instantiate the SDK with your provider
 const wbglBridge = new WBGLBridgeSDK(config);
 
 
