@@ -9,10 +9,13 @@ import axios from "axios";
 export class BGL {
   private readonly web3: Web3
   private readonly chainId: number | string
+  private readonly chainName: number | string
   private readonly bridgeEndpoint = 'https://bglswap.com/app/'
 
   constructor(config: BridgeConfig) {
     this.web3 = new Web3(config.provider)
+    this.chainId = config.chainId
+    this.chainName = config.chainName
   }
 
 
@@ -25,7 +28,8 @@ export class BGL {
     const addressess = await this.web3.eth.getAccounts()
     const dataObject = {
       account: addressess[0],
-      chainId: this.chainId
+      chainId: this.chainId,
+      chainName: this.chainName
     }
 
     const headers = {

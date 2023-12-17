@@ -5,10 +5,14 @@ import axios from 'axios'
 export class WBGL {
   private readonly web3: Web3
   private readonly chainId: number | string
+  private readonly chainName: number | string
+
   private readonly bridgeEndpoint = 'https://bglswap.com/app/'
 
   constructor(config: BridgeConfig) {
     this.web3 = new Web3(config.provider)
+    this.chainId = config.chainId
+    this.chainName = config.chainName
   }
 
   /**
@@ -25,6 +29,8 @@ export class WBGL {
       }
 
       const dataObj = {
+        chainId: this.chainId,
+        chainName: this.chainName,
         bglAddress,
         ethAddress: ethAddress,
         signature
