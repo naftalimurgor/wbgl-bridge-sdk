@@ -141,7 +141,9 @@ export class WBGLBridgeSDK {
     } catch (error) {
       return error
     }
-  } public async getBalanceBSC(): Promise<number> {
+  }
+
+  public async getBalanceBSC(): Promise<number> {
     try {
       const { data } = await axios.get(`${this.bridgeEndpoint}balance/bsc`)
       return data as number
