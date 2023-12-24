@@ -60,6 +60,14 @@ const balance = await wbglBridge.getBalanceETH();
 console.log(`WBGL on Ethereum balance: ${balance}`);
 ```
 
+## 1.  Swap `WBGL` for `WBGL`
+```javascript
+const bglAddress = '' // address to receive BGL
+const amount = 200 // WBGL amount
+const to = '' // BSC/ETH address to send tokens to
+const res = await wbglBridge.swapWBGLforBGL(bglAddress, amount, to)
+```
+
 ## Documentation
 
 For more in-depth information on the SDK's methods, classes, and usage, refer to the [official documentation](docs/).
