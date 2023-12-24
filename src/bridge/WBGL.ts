@@ -20,7 +20,7 @@ export class WBGL {
    * @param from 
    * swapWBGLforBGL swaps WBGL for BGL to recepient address
    */
-  public async swapWBGLforBGL(bglAddress: string, account: string, to: string, amount: number) {
+  public async swapWBGLforBGL(bglAddress: string, to: string, amount: number) {
     try {
       const addressess = await this.web3.eth.getAccounts()
       const ethAddress = addressess[0]
@@ -40,7 +40,7 @@ export class WBGL {
 
       const res = await Promise.all([
         axios.post(`${this.bridgeEndpoint}submit/wbgl`, dataObj, { headers }),
-        this.sendWbgl(account, to, amount)
+        this.sendWbgl(ethAddress, to, amount)
       ])
 
       return res
