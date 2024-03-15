@@ -1,33 +1,34 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import axios from 'axios'
 import { BGL } from './BGL'
-import { WBGL } from './WBGL';
-import { BridgeConfig } from '../types';
+import { WBGL } from './WBGL'
+import { IBridgeConfig } from '../types'
 
-interface BridgeHealth {
-  status: string
-}
-
-interface BridgeStatus {
+interface IBridgeHealth {
   status: string;
-  BGL: BGLStatus;
-  ETH: ETHStatus;
-  BSC: ETHStatus;
 }
 
-interface ETHStatus {
+interface IBridgeStatus {
+  status: string;
+  BGL: IBGLStatus;
+  ETH: IETHStatus;
+  BSC: IETHStatus;
+}
+
+interface IETHStatus {
   chain: string;
   gasPrice: string;
   wbglBalance: string;
   transactionCount: number;
 }
 
-interface BGLStatus {
-  blockchainInfo: BlockchainInfo;
+interface IBGLStatus {
+  blockchainInfo: IBlockchainInfo;
   blockCount: number;
   balance: number;
 }
 
-interface BlockchainInfo {
+interface IBlockchainInfo {
   chain: string;
   blocks: number;
   headers: number;
@@ -39,34 +40,34 @@ interface BlockchainInfo {
   chainwork: string;
   size_on_disk: number;
   pruned: boolean;
-  softforks: Softforks;
+  softforks: ISoftforks;
   warnings: string;
 }
 
-interface Softforks {
-  bip34: Bip34;
-  bip66: Bip34;
-  bip65: Bip34;
-  csv: Bip34;
-  segwit: Bip34;
-  testdummy: Testdummy;
-  taproot: Taproot;
+interface ISoftforks {
+  bip34: IBip34;
+  bip66: IBip34;
+  bip65: IBip34;
+  csv: IBip34;
+  segwit: IBip34;
+  testdummy: ITestdummy;
+  taproot: ITaproot;
 }
 
-interface Taproot {
+interface ITaproot {
   type: string;
-  bip9: Bip9;
+  bip9: IBip9;
   height: number;
   active: boolean;
 }
 
-interface Testdummy {
+interface ITestdummy {
   type: string;
-  bip9: Bip9;
+  bip9: IBip9;
   active: boolean;
 }
 
-interface Bip9 {
+interface IBip9 {
   status: string;
   start_time: number;
   timeout: number;
@@ -74,61 +75,71 @@ interface Bip9 {
   min_activation_height: number;
 }
 
-interface Bip34 {
+interface IBip34 {
   type: string;
   active: boolean;
   height: number;
 }
 
+/**
+ * This is an object returned from the bridge with contract address for BGL on 
+ * Ethereum mainnet and BSC Mainnet.
+ * @param eth: WBGL contract address on Ethereum Mainnet
+ * @param bsc: WBGL contract address on Binance Smart Chain Mainnet
+ */
 
+export interface IContracts {
+  eth: string;
+  bsc: string;
+}
 
 /**
  * Interract with the WBGL<->BGL bridge by creating and instance of this class
  */
 export class WBGLBridgeSDK {
-  private readonly bridgeEndpoint = 'https://bglswap.com/app/'
-  // @ts-ignore
-  private readonly bgl: BGL
+  private bridgeEndpoint: string
+  public readonly bgl: BGL
+  public readonly wbgl: WBGL
 
-  // @ts-ignore
-  private readonly wbgl: WBGL
-
-  constructor(config: BridgeConfig) {
+  constructor(config: IBridgeConfig) {
     this.bgl = new BGL(config)
     this.wbgl = new WBGL(config)
+    this.bridgeEndpoint = config.bridgeEndpoint || 'https://bglswap.com/app/'
   }
 
   /**
    * getBrigeHealth gets the current health of the Bridge
    */
-  public async getBridgeHealth(): Promise<BridgeHealth | null> {
+  public async getBridgeHealth(): Promise<IBridgeHealth | null> {
     try {
-      const { data } = await axios.get(this.bridgeEndpoint)
-      return data as BridgeHealth
+      const { data: bridgeHealth } = await axios.get(this.bridgeEndpoint)
+      return bridgeHealth as IBridgeHealth
     } catch (error) {
       return error
     }
   }
 
   /**
-   * getBridgeStatus returns the status of the bridge.
+   * getBridgeStatus returns the current status of the bridge.
    */
-  public async getBridgeStatus(): Promise<BridgeStatus | null> {
+  public async getBridgeStatus(): Promise<IBridgeStatus | null> {
     try {
-      const { data } = await axios.get(`${this.bridgeEndpoint}status`)
-      return data as BridgeStatus
+      const { data: status } = await axios.get(`${this.bridgeEndpoint}status`)
+      return status as IBridgeStatus
     } catch (error) {
       return error
     }
   }
 
   /**
-   * getBalanceBGL fetches bridge balance in BGL
+   * getBalanceBGL fetches bridge balance in BGL, normalized to units
+   * 1BGL = 1^18 units 
+   * Read more @link https://etherscan.io/token/0x2ba64efb7a4ec8983e22a49c81fa216ac33f383a
    */
   public async getBalanceBGL(): Promise<number> {
     try {
-      const { data } = await axios.get(`${this.bridgeEndpoint}balance/bgl`)
-      return data as number
+      const { data: balanceWBGL } = await axios.get(`${this.bridgeEndpoint}balance/bgl`)
+      return balanceWBGL as number
     } catch (error) {
       return error
     }
@@ -136,8 +147,8 @@ export class WBGLBridgeSDK {
 
   public async getBalanceETH(): Promise<number> {
     try {
-      const { data } = await axios.get(`${this.bridgeEndpoint}balance/eth`)
-      return data as number
+      const { data: balanceETH } = await axios.get(`${this.bridgeEndpoint}balance/eth`)
+      return balanceETH as number
     } catch (error) {
       return error
     }
@@ -145,11 +156,22 @@ export class WBGLBridgeSDK {
 
   public async getBalanceBSC(): Promise<number> {
     try {
-      const { data } = await axios.get(`${this.bridgeEndpoint}balance/bsc`)
-      return data as number
+      const { data: balanceBSC } = await axios.get(`${this.bridgeEndpoint}balance/bsc`)
+      return balanceBSC as number
     } catch (error) {
       return error
     }
   }
 
+  /**
+   * getContracts Returns the WBGL contract addresses on BSC, Ethereum blockchains
+   */
+  public async getContracts(): Promise<IContracts> {
+    try {
+      const { data: contracts } = await axios.get(`${this.bridgeEndpoint}/contracts`)
+      return contracts as IContracts
+    } catch (error) {
+      return error
+    }
+  }
 }
