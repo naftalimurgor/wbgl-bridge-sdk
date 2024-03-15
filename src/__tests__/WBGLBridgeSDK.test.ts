@@ -5,8 +5,8 @@ import { IBridgeConfig } from '../types'
 
 import { BGL } from '../bridge/BGL'
 import { ChainNames, ChaindIds } from '../chains'
-import createOptimismProvider from './utils/createOptimismProvider'
 import { WBGL } from '../bridge/WBGL'
+import HDWalletProvider from '@truffle/hdwallet-provider'
 
 
 expect.extend(matchers)
@@ -16,17 +16,17 @@ describe('WBGLBridgeSDK base class tests on Ethereum', () => {
   let web3Provider = null
 
   beforeAll(() => {
-    const optimimisRPC = process.env.providerUrl
+    const bscNodeRPC = 'https://rpc.ankr.com/bsc'
     const MNEMONIC = process.env.MNEMONIC
-    const signingAuthority = { mnemonic: MNEMONIC }
 
-    web3Provider = createOptimismProvider(signingAuthority, optimimisRPC)
+    web3Provider = new HDWalletProvider(MNEMONIC, bscNodeRPC)
 
     const config: IBridgeConfig = {
       provider: web3Provider,
       chainName: ChainNames.Ethereum,
       chainId: ChaindIds.Ethereum,
-      bridgeEndpoint: 'https://bglswap.com/app/'
+      bridgeEndpoint: 'https://bglswap.com/app/',
+      bglPrivateKey: ''
     }
 
     wBGLBridgeSDK = new WBGLBridgeSDK(config)
