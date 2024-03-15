@@ -2,7 +2,7 @@ import jsbgl from '@naftalimurgor/jsbgl'
 
 import { IBridgeConfig } from './types'
 
-export class BGlWallet {
+export class BGLWallet {
   private readonly privateKey: string
   private readonly seedPhrase: string
 
