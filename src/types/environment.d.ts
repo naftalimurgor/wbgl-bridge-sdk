@@ -7,6 +7,8 @@ declare global {
       privateKey: string
       providerUrl: string
       MNEMONIC: string
+      bglPrivateKey: string
+      bglSeedphrase: string
     }
   }
 }
