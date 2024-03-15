@@ -1,3 +1,3 @@
-import { WBGLBridgeSDK } from './bridge';
+import { WBGLBridgeSDK } from './bridge'
 
 export default WBGLBridgeSDK
