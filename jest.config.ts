@@ -26,7 +26,8 @@ const config: Config = {
     'node_modules/',
     'src/abi/',
     'src/external',
-    'src/__test__/utils/'
+    'src/__test__/utils/',
+    'src/chains.ts'
   ],
 
   moduleFileExtensions: [
