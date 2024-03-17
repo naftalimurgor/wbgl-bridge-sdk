@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import axios from 'axios'
+import fetch from 'node-fetch'
 import { BGL } from './BGL'
 import { WBGL } from './WBGL'
 import { IBridgeConfig } from '../types'
@@ -112,8 +112,9 @@ export class WBGLBridgeSDK {
    */
   public async getBridgeHealth(): Promise<IBridgeHealth | null> {
     try {
-      const { data: bridgeHealth } = await axios.get(this.bridgeEndpoint)
-      return bridgeHealth as IBridgeHealth
+      const res = await fetch(this.bridgeEndpoint)
+      const data = await res.json()
+      return data as IBridgeHealth
     } catch (error) {
       return error
     }
@@ -124,8 +125,9 @@ export class WBGLBridgeSDK {
    */
   public async getBridgeStatus(): Promise<IBridgeStatus | null> {
     try {
-      const { data: status } = await axios.get(`${this.bridgeEndpoint}status`)
-      return status as IBridgeStatus
+      const res = await fetch(`${this.bridgeEndpoint}status`)
+      const data = await res.json()
+      return data as IBridgeStatus
     } catch (error) {
       return error
     }
@@ -138,8 +140,9 @@ export class WBGLBridgeSDK {
    */
   public async getBalanceBGL(): Promise<number> {
     try {
-      const { data: balanceWBGL } = await axios.get(`${this.bridgeEndpoint}balance/bgl`)
-      return balanceWBGL as number
+      const res = await fetch(`${this.bridgeEndpoint}balance/bgl`)
+      const data = await res.json()
+      return data as number
     } catch (error) {
       return error
     }
@@ -147,8 +150,9 @@ export class WBGLBridgeSDK {
 
   public async getBalanceETH(): Promise<number> {
     try {
-      const { data: balanceETH } = await axios.get(`${this.bridgeEndpoint}balance/eth`)
-      return balanceETH as number
+      const res = await fetch(`${this.bridgeEndpoint}balance/eth`)
+      const data = await res.json()
+      return data as number
     } catch (error) {
       return error
     }
@@ -156,8 +160,9 @@ export class WBGLBridgeSDK {
 
   public async getBalanceBSC(): Promise<number> {
     try {
-      const { data: balanceBSC } = await axios.get(`${this.bridgeEndpoint}balance/bsc`)
-      return balanceBSC as number
+      const res = await fetch(`${this.bridgeEndpoint}balance/bsc`)
+      const data = await res.json()
+      return data as number
     } catch (error) {
       return error
     }
@@ -168,7 +173,8 @@ export class WBGLBridgeSDK {
    */
   public async getContracts(): Promise<IContracts> {
     try {
-      const { data: contracts } = await axios.get(`${this.bridgeEndpoint}/contracts`)
+      const res = await fetch(`${this.bridgeEndpoint}/contracts`)
+      const contracts = await res.json()
       return contracts as IContracts
     } catch (error) {
       return error

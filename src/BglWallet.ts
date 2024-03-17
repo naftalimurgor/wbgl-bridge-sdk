@@ -55,6 +55,7 @@ export class BGLWallet {
       await jsbgl.asyncInit(globalThis)
       const wallet = new globalThis.Wallet({ from: this.seedPhrase })
       const address = wallet.getAddress(indexAddress) // index address
+      // console.log('privateKey', address.privateKey)
       return {
         address: address.address,
         wallet,
