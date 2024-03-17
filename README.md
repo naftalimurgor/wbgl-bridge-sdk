@@ -76,12 +76,12 @@ This library is in active development with implemented functions as follows:
 
 The following methods have been implemented and tested with coverage:
 
-[x] `getBridgeHealth()`
-[x] `getBridgeStatus()`
-[x] `getBalanceBGL()`
-[x] `getBalanceETH()`
-[x] `getBalanceBSC()`
-[x] `getContracts()`
+- [x] `getBridgeHealth()`
+- [x] `getBridgeStatus()`
+- [x] `getBalanceBGL()`
+- [x] `getBalanceETH()`
+- [x] `getBalanceBSC()`
+- [x] `getContracts()`
 
 ### Swap Methods(in Development)
 
