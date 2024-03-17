@@ -93,7 +93,7 @@ Swap methods for bridge functionality currently in development []():
 ```
 ## Documentation
 
-For more in-depth information on the SDK's methods, classes, and usage, refer to the [official documentation](docs/).
+For more in-depth information on the SDK's methods, classes, and usage, refer to the [official documentation](https://naftalimurgor.github.io/wbgl-brigde-sdk/).
 
 ## Contribution Guidelines
 
