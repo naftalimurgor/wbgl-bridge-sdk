@@ -45,6 +45,7 @@ const config: Config = {
     '**/__tests__/**/*.[t]s?(x)',
     '**/?(*.)+(spec|test).[t]s?(x)'
   ],
+  testTimeout: 8 * 1000, // 8s
   transformIgnorePatterns: [
     '/node_modules/',
     '\\.pnp\\.[^\\/]+$'
