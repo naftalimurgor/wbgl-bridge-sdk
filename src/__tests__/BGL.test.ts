@@ -55,9 +55,14 @@ describe('BGL class tests on Binance Smart Chain', () => {
     // this this the address to receive WBGL to:
     console.log(recepientBSCAddress)
 
+    // Throws with:  {
+    //   result: null,
+    //   error: { code: -26, message: 'bad-cb-length' },
+    //   id: 'curltext'
+    // }
     const swapResult = await bGL.swapBGLforWBGL(recepientBSCAddress, bglTotalAmountSpent)
     console.log(swapResult)
-    expect(swapResult).toBeDefined()
+    expect(swapResult.blgTxHash).toBeDefined()
   })
 
 })
