@@ -76,7 +76,7 @@ This library is in active development with implemented functions as follows:
 
 The following methods have been implemented and tested with coverage:
 
-```js
+```javascript
 [✔️] getBridgeHealth()
 [✔️] getBridgeStatus()
 [✔️] getBalanceBGL()
@@ -89,7 +89,7 @@ The following methods have been implemented and tested with coverage:
 
 Swap methods for bridge functionality currently in development []():
 
-```js
+```javascript
 [] swapWBGLforBGL(bglAddress: string, to: string, amount: number)
 [] swapBGLforWBGL(sourceAddress:string,bglAmount: number)
 ```
