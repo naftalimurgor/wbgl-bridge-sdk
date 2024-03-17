@@ -68,6 +68,31 @@ const to = '' // BSC/ETH address to send tokens to
 const res = await wbglBridge.swapWBGLforBGL(bglAddress, amount, to)
 ```
 
+## Roadmap
+
+This library is in active development with implemented functions as follows:
+
+### Bridgle methods
+
+The following methods have been implemented and tested with coverage:
+
+```js
+[✔️] getBridgeHealth()
+[✔️] getBridgeStatus()
+[✔️] getBalanceBGL()
+[✔️] getBalanceETH()
+[✔️] getBalanceBSC()
+[✔️] getContracts()
+```
+
+### Swap Methods(in Development)
+
+Swap methods for bridge functionality currently in development []():
+
+```js
+[] swapWBGLforBGL(bglAddress: string, to: string, amount: number)
+[] swapBGLforWBGL(sourceAddress:string,bglAmount: number)
+```
 ## Documentation
 
 For more in-depth information on the SDK's methods, classes, and usage, refer to the [official documentation](docs/).
