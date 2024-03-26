@@ -3,9 +3,19 @@ import fetch from 'node-fetch'
 import abi from '../abi/WBGL.json'
 import { IBridgeConfig } from '../types'
 import { ChaindIds } from '../chains'
+import { IContracts } from '.'
 
-// Port everything over as in the webapp
-// Test with given BGL :)
+/**
+ * @param bglAddress is the address to receive BGL to
+ * @param wbglAmount is the amount of WBGL tokens to swap for BGL amount
+ */
+export interface WBGLBGLExchangePair {
+  bglAddress: string
+  to: string
+  recepientWbglAddress: string
+  wbglAmount: number
+}
+
 export class WBGL {
   /**
    * @member web3 instance to use.
@@ -24,16 +34,21 @@ export class WBGL {
     this.chainName = config.chainName
   }
 
+  /// START PUBLIC METHODS
   /**
    * @param bglAddress Bitgesell address to receive BGL
    * @param from
    * swapWBGLforBGL swaps WBGL for BGL to recepient Bitgesell address
    */
-  public async swapWBGLforBGL(bglAddress: string, to: string, amount: number) {
+  public async swapWBGLforBGL({
+    bglAddress,
+    recepientWbglAddress,
+    wbglAmount
+  }: WBGLBGLExchangePair) {
     try {
       const addressess = await this.web3.eth.getAccounts()
-      const ethAddress = addressess[0]
-      const signature = await this._signMessage(ethAddress, bglAddress)
+      const account = recepientWbglAddress || addressess[0]
+      const signature = await this._signMessage(account, bglAddress)
 
       const headers = {
         'Content-Type': 'application/json',
@@ -43,37 +58,58 @@ export class WBGL {
         chainId: this.chainId,
         chain: this.chainName,
         bglAddress,
-        ethAddress: ethAddress,
+        ethAddress: account,
         signature,
       }
+      const res = await fetch(`${this.bridgeEndpoint}submit/wbgl`, {
+        headers,
+        body: JSON.stringify(dataObject),
+        method: 'POST'
+      })
+      const bridgeResponse = await res.json()
 
-      const res = await Promise.all([
-        fetch(`${this.bridgeEndpoint}submit/wbgl`, {
-          headers,
-          body: JSON.stringify(dataObject),
-          method: 'POST'
-        }),
-        this.sendWbgl(to, amount),
-      ])
+      const { address: sendAddress } = bridgeResponse
 
-      return res
+      const txRes = await this._sendWbgl(account, sendAddress, wbglAmount)
+      return txRes
     } catch (error) {
       throw new Error('Failed' + error)
     }
-  }
+  } /// END OF PUBLIC METHODS
 
+  /// START PRIVATE METHODS
   private async _signMessage(account: string, message: string) {
     return await this.web3.eth.sign(message, account)
   }
 
-  public async sendWbgl(to: string, amount: number) {
-    // should be to Token units not wei
+  public async _sendWbgl(
+    from: string,
+    to: string,
+    amount: number
+  ) {
     const value = this.web3.utils.toWei(amount, 'ether')
-    const tokenAddress = '0x2ba64efb7a4ec8983e22a49c81fa216ac33f383a'
-
+    const tokenAddress = await this._getWBGLTokenAddress()
+    // TODO: perform gas estimate to avoid exhorbitant gas fees
     const WBGContractInstance = new this.web3.eth.Contract(abi, tokenAddress)
-    // copy the way it is in the bridge implementation
-    const tx = await WBGContractInstance.methods.transfer(to, value).send()
+    const tx = await WBGContractInstance.methods.transfer(to, value).send({ from })
     return tx
   }
+
+  private async _getWBGLTokenAddress(): Promise<string> {
+    try {
+      const res = await fetch(`${this.bridgeEndpoint}/contracts`)
+      const contracts = await res.json() as IContracts
+      return contracts[this.isChainBsc(this.chainId) ? 'bsc' : 'eth']
+    } catch (error) {
+      return error
+    }
+  }
+
+
+  private isChainBsc(chainId: string | number): boolean {
+    const bscChainIds: (string | number)[] = ['0x38', '0x61'] // Binance Smart Chain (Mainnet & Testnet) chain IDs
+    return bscChainIds.includes(chainId)
+  }   /// END OF PRIVATE METHODS
+
 }
+

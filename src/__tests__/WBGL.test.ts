@@ -19,7 +19,6 @@ describe('WBGL class tests on Ethereum', () => {
   beforeAll(() => {
     const bscProvider = 'https://rpc.ankr.com/bsc'
     const MNEMONIC = process.env.MNEMONIC
-    // const signingAuthority = { mnemonic: MNEMONIC }
 
     web3Provider = new HDWalletProvider(MNEMONIC, bscProvider)
 

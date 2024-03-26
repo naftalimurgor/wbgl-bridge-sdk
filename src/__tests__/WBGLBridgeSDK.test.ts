@@ -64,7 +64,7 @@ describe('WBGLBridgeSDK base class tests on Ethereum', () => {
     expect(bsc).toBe('0x2ba64efb7a4ec8983e22a49c81fa216ac33f383a')
     expect(eth).toBe('0x2ba64efb7a4ec8983e22a49c81fa216ac33f383a')
 
-    // NB: Both WBGL contracts are deployed to same adress on the same network, unless this changes
+    // NB: Both WBGL contracts are deployed to same address on the bsc + ethereum, unless this changes in future
     expect(bsc).toEqual(eth)
   })
 
