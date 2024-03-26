@@ -36,16 +36,25 @@ Import the SDK into your TypeScript project to start using the Bitgesell WGL Bri
 ```typescript
 import Web3 from 'web3'
 import PrivateKeyProvider from 'truffle-privatekey-provider'
-import { WBGLBridgeSDK } from 'wbgl-bridge-sdk';
+import { WBGLBridgeSDK, IBridgeConfig } from 'wbgl-bridge-sdk';
 
-const privateKey = '4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'
-const provider = new PrivateKeyProvider(privateKey, 'https://mainnet.infura.com')
+const bscProviderRpc = 'https://rpc.ankr.com/bsc'
+const MNEMONIC = process.env.MNEMONIC
+const bglSeedPhrase = process.env.bglSeedphrase
 
-const config = {
-  provider,
-  chainName: 'Eth',
-  chainId: 1
+web3Provider = new HDWalletProvider(MNEMONIC, bscProviderRpc)
+
+const config: IBridgeConfig = {
+  provider: web3Provider,
+  chainName: ChainNames.BinanceSmartChain,
+  chainId: ChaindIds.BinanceSmartChain,
+  bridgeEndpoint: 'https://bglswap.com/app/',
+  bglPrivateKey: process.env.bglPrivateKey,
+  bglSeedPhrase: bglSeedPhrase
 }
+
+const accounts = await web3Instance.eth.getAccounts()
+recepientBSCAddress = accounts[0] // address 0
 
 // Instantiate the SDK with your provider
 const wbglBridge = new WBGLBridgeSDK(config);
@@ -66,6 +75,38 @@ const bglAddress = '' // address to receive BGL
 const amount = 200 // WBGL amount
 const to = '' // BSC/ETH address to send tokens to
 const res = await wbglBridge.swapWBGLforBGL(bglAddress, amount, to)
+```
+## 2. Swap `BGL` for `WBGL`
+
+```typescript
+const blgAmountToSwap = 2 // 2BGL
+const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
+
+const bGLWBGLExchangePair: BGLWBGLExchangePair = {
+  sourceWBGLAddress: recepientBSCAddress,
+  bglAmount: blgAmountToSwap,
+  bglFee: bglTxFee
+}
+
+const swapResult = await bGL.swapBGLforWBGL(bGLWBGLExchangePair)
+console.log(swapResult)
+
+```
+On a sucessful swap: 
+
+```javascript
+{
+  bglBridgeAddress: 'bgl1qsxt0ktqgxptn6qv6s4jhxe6rappvv6r342vmx3',
+  currentWBGLBridgeBalance: '112020.082928590506503209',
+  msg: 'You have successfully sent 1 to bgl1qsxt0ktqgxptn6qv6s4jhxe6rappvv6r342vmx3 to receive WBGL,  1 fee is charged. The currently available WBGL balance is 112020.082928590506503209. If you send more BGL than is available to complete the exchange, your BGL will be returned to your address.\n' +
+  'Please note, that a fee of 1% will be automatically deducted from the transfer amount. This exchange pair is active for 7 days.',
+  bglTxHash: '819eefaf783289c8220b5052ac2e4141b25948a18ee44d713d08db9dab634e0f',
+  rpcResult: {
+    result: '819eefaf783289c8220b5052ac2e4141b25948a18ee44d713d08db9dab634e0f',
+    error: null,
+    id: 'curltext'
+  }
+}
 ```
 
 ## Roadmap
@@ -88,8 +129,8 @@ The following methods have been implemented and tested with coverage:
 Swap methods for bridge functionality currently in development []():
 
 ```javascript
-[] swapWBGLforBGL(bglAddress: string, to: string, amount: number)
-[] swapBGLforWBGL(sourceAddress:string,bglAmount: number)
+[x] swapWBGLforBGL(bglAddress: string, to: string, amount: number)
+[x] swapBGLforWBGL(sourceAddress:string,bglAmount: number)
 ```
 ## Documentation
 

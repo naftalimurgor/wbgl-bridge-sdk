@@ -49,7 +49,7 @@ describe('BGL class tests on Binance Smart Chain', () => {
   })
 
   it('should swap BGL for WBGL', async () => {
-    const blgAmountToSwap = 2 // 2BGL
+    const blgAmountToSwap = 1 // 1BGL
     const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
 
     const bGLWBGLExchangePair: BGLWBGLExchangePair = {
@@ -59,6 +59,7 @@ describe('BGL class tests on Binance Smart Chain', () => {
     }
 
     const swapResult = await bGL.swapBGLforWBGL(bGLWBGLExchangePair)
+    console.log(swapResult)
     expect(swapResult.bglTxHash).toBeDefined()
     expect(swapResult.rpcResult.error).toBe(null)
 
