@@ -1,6 +1,6 @@
 {
   "name": "wbgl-bridge-sdk",
-  "version": "3.0.1",
+  "version": "4.0.1",
   "description": "a typescript-starter project",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
