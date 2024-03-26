@@ -3,14 +3,16 @@ import * as matchers from 'jest-extended'
 import { IBridgeConfig } from '../types'
 
 import Web3 from 'web3'
-import sb from 'satoshi-bitcoin'
 
-import { BGL } from '../bridge/BGL'
-import { ChainNames, ChaindIds } from '../chains'
 import HDWalletProvider from '@truffle/hdwallet-provider'
+import { BGL, BGLWBGLExchangePair } from '../bridge/BGL'
+import { ChainNames, ChaindIds } from '../chains'
 
 
 expect.extend(matchers)
+const TIME_OUT_MS = 10 * 1000
+
+jest.setTimeout(TIME_OUT_MS)
 
 describe('BGL class tests on Binance Smart Chain', () => {
 
@@ -47,22 +49,19 @@ describe('BGL class tests on Binance Smart Chain', () => {
   })
 
   it('should swap BGL for WBGL', async () => {
-    const blgAmountToSwap = sb.toSatoshi(5) // 5BGL
-    const bglTxFee = sb.toSatoshi(0.00010000)  // fee to cover Bitgesell transaction
-    const bglTotalAmountSpent = blgAmountToSwap + bglTxFee
-    console.log(bglTotalAmountSpent)
+    const blgAmountToSwap = 2 // 2BGL
+    const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
 
-    // this this the address to receive WBGL to:
-    console.log(recepientBSCAddress)
+    const bGLWBGLExchangePair: BGLWBGLExchangePair = {
+      sourceWBGLAddress: recepientBSCAddress,
+      bglAmount: blgAmountToSwap,
+      bglFee: bglTxFee
+    }
 
-    // Throws with:  {
-    //   result: null,
-    //   error: { code: -26, message: 'bad-cb-length' },
-    //   id: 'curltext'
-    // }
-    const swapResult = await bGL.swapBGLforWBGL(recepientBSCAddress, bglTotalAmountSpent)
-    console.log(swapResult)
-    expect(swapResult.blgTxHash).toBeDefined()
+    const swapResult = await bGL.swapBGLforWBGL(bGLWBGLExchangePair)
+    expect(swapResult.bglTxHash).toBeDefined()
+    expect(swapResult.rpcResult.error).toBe(null)
+
   })
 
 })

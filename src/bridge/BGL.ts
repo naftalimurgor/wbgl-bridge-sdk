@@ -1,9 +1,10 @@
-import Web3 from 'web3'
 import fetch from 'node-fetch'
-import { IBridgeConfig } from '../types'
-import { ChainNames } from '../chains'
+import sb from 'satoshi-bitcoin'
+import Web3 from 'web3'
 import { BGLWallet } from '../BglWallet'
-import jsbgl from '@naftalimurgor/jsbgl'
+import { ChainNames } from '../chains'
+import { IBridgeConfig } from '../types'
+import { Transaction } from './Transaction'
 
 /**
  * Response of the Bridge when initiating BGL for WBGL swap
@@ -19,6 +20,25 @@ interface IBridgeResponse {
   feePercentage: string;
 }
 
+export interface BGlSwapSuccessResult {
+  result: string,
+  error: null,
+  id: 'string'
+}
+
+/**
+ * An object with BGL/WBGL exchange pair params
+ * @param bglAmount amount in BG of BGL to swap
+ * @param sourceWBGLAddress Address to recive WBGL tokens to. Should be account with access to
+ * Since signed messsages are used to facilitate swap.
+ * @param bglFee is fee in BGL(default is .0001) an equivalent of 10,000 satoshis
+ */
+export interface BGLWBGLExchangePair {
+  sourceWBGLAddress: string,
+  bglAmount: number,
+  bglFee?: number
+}
+
 /**
  * BGL <- WBGL, swap BGL and recive WBGL to your bitgesell address,
  */
@@ -29,6 +49,11 @@ export class BGL {
    * BSC, Ethereum, and L2 chains(coming soon)
    */
   private web3: Web3
+
+  /**
+   * Minimum Fee in satoshi units for BGL transaction
+   */
+  private static minTxFee = sb.toSatoshi(0.0001) // 10,000 satoshis
 
   /**
   * Chain Names for Network to interract with: BSC, Ethereum,
@@ -49,7 +74,14 @@ export class BGL {
    */
   private bglWallet: BGLWallet
 
+  /**
+   * Bitgesell RPC Node to interact with
+   */
   private bglRpcNode: string
+
+  /**
+   * BGL Wallet PrivateKey to use for sigining transactions
+   */
   private readonly privateKey: string | null
 
   constructor(config: IBridgeConfig) {
@@ -64,21 +96,24 @@ export class BGL {
   /**
    * 
    *  Send BGL to recieve WBGL tokens to complete the swap
-   * @param sourceAddress Address to send WBGL to: can be BSC address or Ethereum address
+   * @param sourceWBGLAddress Address to send WBGL to: can be BSC address or Ethereum address
    * @param bglAmount amount of BGL to swap for WBGL
    * @link more https://bglswap.com/
    */
-  public async swapBGLforWBGL(
-    sourceAddress: string,
-    bglAmount: number,
-  ) {
+  public async swapBGLforWBGL({
+    sourceWBGLAddress,
+    bglAmount,
+    bglFee
+  }: BGLWBGLExchangePair) {
+
+    const fee = sb.toSatoshi(bglFee) || BGL.minTxFee
+    const amountToSwap = sb.toSatoshi(bglAmount) - fee
 
     const bglWallet = this.privateKey ? await this.bglWallet.createWalletFromPrivateKey() : await this.bglWallet.createWalletFromMnemonic()
     const { address: bglSenderAddress, privateKey } = bglWallet
-    // console.log('privateKey:', privateKey)
 
-    const WBGLAddress = sourceAddress || await this.web3.eth.getAccounts()[0]
-    const bridgeResponse = await this._submitToBridge(WBGLAddress, this.chainName)
+    const WBGLSourceAddress = sourceWBGLAddress || await this.web3.eth.getAccounts()[0]
+    const bridgeResponse = await this._submitToBridge(WBGLSourceAddress, this.chainName)
 
     const {
       bglAddress: bglBridgeAddress,
@@ -88,19 +123,21 @@ export class BGL {
 
     const txObject = await this._buildBridgeTransactionObject(
       bglSenderAddress,
-      bglAmount,
+      amountToSwap,
       bglBridgeAddress,
-      privateKey
+      privateKey,
+      fee
     )
 
-    const txres = await this._broadcastbglTransaction(txObject)
 
+    const txres = await this._broadcastbglTransaction(txObject) as BGlSwapSuccessResult
     return {
       bglBridgeAddress: bglBridgeAddress,
       currentWBGLBridgeBalance: currentWBGLBalance,
       msg: `You have successfully sent ${bglAmount} to ${bglBridgeAddress} to receive WBGL,  ${feePercentage} fee is charged. The currently available WBGL balance is ${currentWBGLBalance}. If you send more BGL than is available to complete the exchange, your BGL will be returned to your address.
       Please note, that a fee of 1% will be automatically deducted from the transfer amount. This exchange pair is active for 7 days.`,
-      blgTxHash: txres
+      bglTxHash: txres.result,
+      rpcResult: txres
     }
   }
 
@@ -127,10 +164,11 @@ export class BGL {
         headers: payload.headers,
         method: 'POST'
       })
-      const txres = await res.json()
-      console.log(txres)
+      const result = await res.json()
+      return result as BGlSwapSuccessResult
     } catch (error) {
       console.log(error)
+      return error
     }
   }
 
@@ -168,30 +206,26 @@ export class BGL {
     bglAmountToSwap: number,
     bridgeBGLaddress: string,
     privateKey: string,
+    bglTxFee: number
   ) {
-    await jsbgl.asyncInit()
-    const txObject = new globalThis.Transaction()
+
+    const txObject = Transaction.makeTxObject()
 
     const utxosData = await this._fetchAddressUTxos(bglFromPublicAddress)
     if (!utxosData) throw new Error(`Failed to fetch utxo output for ${bglFromPublicAddress}`)
 
     const { data: utxos } = utxosData
-    console.log('data>>>:', utxos)
     const data = await this._getBglAddressBalance(bglFromPublicAddress)
-    // console.log('data:', data)
 
     const { balance: blgSourceAddressBalance } = data
-    console.log(blgSourceAddressBalance)
 
-    const newBGLBalanceAfterSwap = (blgSourceAddressBalance - bglAmountToSwap)
-    console.log(newBGLBalanceAfterSwap)
+    const newBGLBalanceAfterSwap = (blgSourceAddressBalance - bglAmountToSwap - bglTxFee)
 
     if (utxos.length) {
       for (const key in utxos) {
         const utxo = utxos[key]
-        // console.log('utxo', utxo)
         txObject.addInput({
-          txid: utxo.txId,
+          txId: utxo.txId,
           vOut: utxo.vOut,
           address: bglFromPublicAddress,
         })
@@ -203,7 +237,7 @@ export class BGL {
       })
 
       if (newBGLBalanceAfterSwap > 0) {
-        console.log('new balance after swap:', newBGLBalanceAfterSwap)
+
         txObject.addOutput({
           value: newBGLBalanceAfterSwap,
           address: bglFromPublicAddress
@@ -211,9 +245,7 @@ export class BGL {
       }
 
       let utxoCount = 0
-      // sign tx object
       for (const key in utxos) {
-        // console.log('signingPrivatekey', privateKey)
         const utxo = utxos[key]
         console.log(utxo)
         txObject.signInput(utxoCount, {
@@ -223,8 +255,8 @@ export class BGL {
 
         utxoCount++
       }
+
       const newTx = txObject.serialize()
-      console.log(newTx)
       return newTx
     }
   }
@@ -250,13 +282,10 @@ export class BGL {
 
   private async _getBglAddressBalance(bglAddress: string) {
     const bglAPIV1Endpoint = 'https://api.bitaps.com/bgl/v1/blockchain'
-
     try {
-      const res = await fetch(`${bglAPIV1Endpoint}/address/state/${bglAddress}`)
-      const data = await res.json()
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      return data.data // this is how Bitgesell V1 API structures the response, everything is inside a data {} in the response
+      const response = await fetch(`${bglAPIV1Endpoint}/address/state/${bglAddress}`)
+      const result = await response.json()
+      return result.data
     } catch (error) {
       console.error(error)
     }
