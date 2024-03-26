@@ -69,14 +69,15 @@ const balance = await wbglBridge.getBalanceETH();
 console.log(`WBGL on Ethereum balance: ${balance}`);
 ```
 
-## 1.  Swap `WBGL` for `WBGL`
+### 1.  Swap `WBGL` Tokens for `BGL`
 ```javascript
 const bglAddress = '' // address to receive BGL
 const amount = 200 // WBGL amount
 const to = '' // BSC/ETH address to send tokens to
 const res = await wbglBridge.swapWBGLforBGL(bglAddress, amount, to)
 ```
-## 2. Swap `BGL` for `WBGL`
+
+### 2. Swap `BGL` for `WBGL` Tokens to BSC/Ethereum address
 
 ```typescript
 const blgAmountToSwap = 2 // 2BGL

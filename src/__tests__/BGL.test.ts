@@ -5,8 +5,13 @@ import { IBridgeConfig } from '../types'
 import Web3 from 'web3'
 
 import HDWalletProvider from '@truffle/hdwallet-provider'
-import { BGL, BGLWBGLExchangePair } from '../bridge/BGL'
-import { ChainNames, ChaindIds } from '../chains'
+
+import {
+  BGL,
+  BGLWBGLExchangePair,
+  ChainNames,
+  ChaindIds
+} from '../'
 
 
 expect.extend(matchers)
@@ -48,7 +53,7 @@ describe('BGL class tests on Binance Smart Chain', () => {
     expect(bGL).toBeInstanceOf(BGL)
   })
 
-  it('should swap BGL for WBGL', async () => {
+  it('should swap BGL for WBGL Tokens', async () => {
     const blgAmountToSwap = 1 // 1BGL
     const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
 
@@ -59,10 +64,8 @@ describe('BGL class tests on Binance Smart Chain', () => {
     }
 
     const swapResult = await bGL.swapBGLforWBGL(bGLWBGLExchangePair)
-    console.log(swapResult)
+    // console.log(swapResult)
     expect(swapResult.bglTxHash).toBeDefined()
     expect(swapResult.rpcResult.error).toBe(null)
-
-  })
-
+  }, 15 * 1000)
 })

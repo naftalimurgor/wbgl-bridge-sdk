@@ -3,9 +3,13 @@ import * as matchers from 'jest-extended'
 import { WBGLBridgeSDK } from '../bridge'
 import { IBridgeConfig } from '../types'
 
-import { BGL } from '../bridge/BGL'
-import { ChainNames, ChaindIds } from '../chains'
-import { WBGL } from '../bridge/WBGL'
+import {
+  BGL,
+  ChainNames,
+  ChaindIds,
+  WBGL
+} from '../'
+
 import HDWalletProvider from '@truffle/hdwallet-provider'
 
 

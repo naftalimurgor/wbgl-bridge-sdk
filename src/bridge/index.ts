@@ -181,3 +181,9 @@ export class WBGLBridgeSDK {
     }
   }
 }
+
+export {
+  BGL,
+  WBGL,
+  IBridgeConfig,
+}

@@ -1,9 +1,12 @@
 import * as matchers from 'jest-extended'
 
-import { IBridgeConfig } from '../types'
+import {
+  ChainNames,
+  ChaindIds,
+  WBGL,
+  IBridgeConfig
+} from '../'
 
-import { ChainNames, ChaindIds } from '../chains'
-import { WBGL } from '../bridge/WBGL'
 import HDWalletProvider from '@truffle/hdwallet-provider'
 
 
