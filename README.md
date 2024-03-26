@@ -128,10 +128,9 @@ The following methods have been implemented and tested with coverage:
 
 Swap methods for bridge functionality currently in development []():
 
-```javascript
-[x] swapWBGLforBGL(bglAddress: string, to: string, amount: number)
-[x] swapBGLforWBGL(sourceAddress:string,bglAmount: number)
-```
+- [x] `swapBGLforBGL(bGLWBGLExchangePair: BGLWBGLExchangePair)`
+- [x] `swapWBGLforBGL(wBGLBGLExchangePair: BGLWBGLExchangePair)`
+
 ## Documentation
 
 For more in-depth information on the SDK's methods, classes, and usage, refer to the [official documentation](https://naftalimurgor.github.io/wbgl-brigde-sdk/).
