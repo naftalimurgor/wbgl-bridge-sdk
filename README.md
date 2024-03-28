@@ -44,6 +44,7 @@ const bglSeedPhrase = process.env.bglSeedphrase
 
 web3Provider = new HDWalletProvider(MNEMONIC, bscProviderRpc)
 
+// SDK config object
 const config: IBridgeConfig = {
   provider: web3Provider,
   chainName: ChainNames.BinanceSmartChain,
