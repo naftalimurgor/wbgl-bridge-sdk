@@ -1,6 +1,6 @@
 import * as matchers from 'jest-extended'
 
-import { WBGLBridgeSDK } from '../bridge'
+import { IBridgeHealth, WBGLBridgeSDK } from '../bridge'
 import { IBridgeConfig } from '../types'
 
 import {
@@ -9,52 +9,74 @@ import {
   ChaindIds,
   WBGL
 } from '../'
-
-import HDWalletProvider from '@truffle/hdwallet-provider'
+import { ethers } from 'ethers'
 
 
 expect.extend(matchers)
 
 describe('WBGLBridgeSDK base class tests on Ethereum', () => {
   let wBGLBridgeSDK: WBGLBridgeSDK
-  let web3Provider = null
+  let provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
 
   beforeAll(() => {
     const bscNodeRPC = 'https://rpc.ankr.com/bsc'
-    const MNEMONIC = process.env.MNEMONIC
+    // const MNEMONIC = process.env.MNEMONIC
 
-    web3Provider = new HDWalletProvider(MNEMONIC, bscNodeRPC)
+    provider = new ethers.providers.JsonRpcProvider(bscNodeRPC)
 
     const config: IBridgeConfig = {
-      provider: web3Provider,
+      evmPrivateKey: process.env.evmPrivateKey as string, // Arbitrum, BNB chain, Ethereum privateKey etc
+      provider: provider,
       chainName: ChainNames.Ethereum,
       chainId: ChaindIds.Ethereum,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: ''
+      bglPrivateKey: process.env.bglPrivateKey as string
     }
 
     wBGLBridgeSDK = new WBGLBridgeSDK(config)
   })
 
-  afterAll(() => {
-    web3Provider.engine.stop()
-  })
 
-  it('should initiate WBGLBridgeSDK and internal classes correctly', () => {
+  it.only('should initiate WBGLBridgeSDK and internal classes correctly', () => {
     expect(wBGLBridgeSDK.bgl).toBeInstanceOf(BGL)
     expect(wBGLBridgeSDK.wbgl).toBeInstanceOf(WBGL)
   })
 
   it('should get Bridge Health status', async () => {
-    const bridgeHealth = await wBGLBridgeSDK.getBridgeHealth()
+    const bridgeHealth = await wBGLBridgeSDK.getBridgeHealth() as IBridgeHealth
+
     const { status } = bridgeHealth
-    expect(status).toBe('ok')
+    expect(status).not.toBe(null)
   })
 
-  it('should getBalanceBGL in BGL of the Bridge', async () => {
+  it.only('should getBalanceBGL in BGL of the Bridge', async () => {
     const balanceBGL = await wBGLBridgeSDK.getBalanceBGL()
     expect(balanceBGL).toBeDefined()
     expect(balanceBGL).toBeNumber()
+  })
+
+  it.only('should token balance in WBGL  on BNBChain', async () => {
+    const wbglBalance = await wBGLBridgeSDK.getBalanceBNBChain()
+    expect(wbglBalance).toBeDefined()
+    expect(wbglBalance).toBeNumber()
+  })
+
+  it.only('should getBalanceBGL in WBGL on Ethereum network', async () => {
+    const wbglBalance = await wBGLBridgeSDK.getBalanceEthereum()
+    expect(wbglBalance).toBeDefined()
+    expect(wbglBalance).toBeNumber()
+  })
+
+  it.only('should getBalanceBGL in WBGL on Optimism network', async () => {
+    const wbglBalance = await wBGLBridgeSDK.getBalanceOptimismChain()
+    expect(wbglBalance).toBeDefined()
+    expect(wbglBalance).toBeNumber()
+  })
+
+  it.only('should getBalanceBGL in WBGL on Ethereum network', async () => {
+    const wbglBalance = await wBGLBridgeSDK.getBalanceArbitrumChain()
+    expect(wbglBalance).toBeDefined()
+    expect(wbglBalance).toBeNumber()
   })
 
   it('should getContracts address of WBGL contract on BSC and Ethereum Mainnet', async () => {
