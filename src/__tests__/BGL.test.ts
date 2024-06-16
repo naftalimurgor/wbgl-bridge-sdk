@@ -2,16 +2,13 @@ import * as matchers from 'jest-extended'
 
 import { IBridgeConfig } from '../types'
 
-import Web3 from 'web3'
-
-import HDWalletProvider from '@truffle/hdwallet-provider'
-
 import {
   BGL,
   BGLWBGLExchangePair,
   ChainNames,
   ChaindIds
 } from '../'
+import { ethers, Wallet } from 'ethers'
 
 
 expect.extend(matchers)
@@ -19,38 +16,39 @@ const TIME_OUT_MS = 10 * 1000
 
 jest.setTimeout(TIME_OUT_MS)
 
-describe('BGL class tests on Binance Smart Chain', () => {
+describe('BGL class tests on BNB Chain', () => {
 
-  let bGL: BGL
-  let web3Provider = null
-  let web3Instance: Web3
-  let recepientBSCAddress: string
+  let BGLInstance: BGL
+  // let provider
+  let signer: ethers.Wallet
+  let recepientBNBAddress: string
 
   beforeAll(async () => {
     const bscProviderRpc = 'https://rpc.ankr.com/bsc'
-    const MNEMONIC = process.env.MNEMONIC
+    // const MNEMONIC = process.env.MNEMONIC as string
     const bglSeedPhrase = process.env.bglSeedphrase
 
-    web3Provider = new HDWalletProvider(MNEMONIC, bscProviderRpc)
+    const provider = new ethers.providers.JsonRpcProvider(bscProviderRpc)
+    // const provider = new ethers.providers.Web3Provider(window.etherum)
 
     const config: IBridgeConfig = {
-      provider: web3Provider,
+      evmPrivateKey: process.env.privateKey as string,
+      provider: provider,
       chainName: ChainNames.BinanceSmartChain,
       chainId: ChaindIds.BinanceSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: process.env.bglPrivateKey,
+      bglPrivateKey: process.env.bglPrivateKey as string,
       bglSeedPhrase: bglSeedPhrase
     }
 
-    bGL = new BGL(config)
-    web3Instance = new Web3(web3Provider)
-    const accounts = await web3Instance.eth.getAccounts()
-    recepientBSCAddress = accounts[0] // address 0
+    BGLInstance = new BGL(config)
+    signer = new Wallet(config.evmPrivateKey, provider)
+    recepientBNBAddress = await signer.getAddress()
 
   })
 
   it('test that BGL class instantiates correctly', () => {
-    expect(bGL).toBeInstanceOf(BGL)
+    expect(BGLInstance).toBeInstanceOf(BGL)
   })
 
   it('should swap BGL for WBGL Tokens', async () => {
@@ -58,12 +56,12 @@ describe('BGL class tests on Binance Smart Chain', () => {
     const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
 
     const bGLWBGLExchangePair: BGLWBGLExchangePair = {
-      sourceWBGLAddress: recepientBSCAddress,
+      recepientWBGLAddress: recepientBNBAddress,
       bglAmount: blgAmountToSwap,
       bglFee: bglTxFee
     }
 
-    const swapResult = await bGL.swapBGLforWBGL(bGLWBGLExchangePair)
+    const swapResult = await BGLInstance.swapBGLforWBGL(bGLWBGLExchangePair)
     // console.log(swapResult)
     expect(swapResult.bglTxHash).toBeDefined()
     expect(swapResult.rpcResult.error).toBe(null)
