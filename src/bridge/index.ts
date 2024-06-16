@@ -4,7 +4,7 @@ import { BGL } from './BGL'
 import { WBGL } from './WBGL'
 import { IBridgeConfig } from '../types'
 
-interface IBridgeHealth {
+export interface IBridgeHealth {
   status: string;
 }
 
@@ -108,6 +108,7 @@ export class WBGLBridgeSDK {
   }
 
   /**
+   * @deprecated Do not use.
    * getBrigeHealth gets the current health of the Bridge
    */
   public async getBridgeHealth(): Promise<IBridgeHealth | null> {
@@ -121,6 +122,7 @@ export class WBGLBridgeSDK {
   }
 
   /**
+   * @deprecated Do not use.
    * getBridgeStatus returns the current status of the bridge.
    */
   public async getBridgeStatus(): Promise<IBridgeStatus | null> {
@@ -148,7 +150,7 @@ export class WBGLBridgeSDK {
     }
   }
 
-  public async getBalanceETH(): Promise<number> {
+  public async getBalanceEthereum(): Promise<number> {
     try {
       const res = await fetch(`${this.bridgeEndpoint}balance/eth`)
       const data = await res.json()
@@ -158,9 +160,9 @@ export class WBGLBridgeSDK {
     }
   }
 
-  public async getBalanceBSC(): Promise<number> {
+  public async getBalanceBNBChain(): Promise<number> {
     try {
-      const res = await fetch(`${this.bridgeEndpoint}balance/bsc`)
+      const res = await fetch(`${this.bridgeEndpoint}balance/bnb`)
       const data = await res.json()
       return data as number
     } catch (error) {
@@ -168,7 +170,29 @@ export class WBGLBridgeSDK {
     }
   }
 
+  public async getBalanceArbitrumChain(): Promise<number> {
+    try {
+      const res = await fetch(`${this.bridgeEndpoint}balance/arb`)
+      const data = await res.json()
+      return data as number
+    } catch (error) {
+      return error
+    }
+  }
+
+  public async getBalanceOptimismChain(): Promise<number> {
+    try {
+      const res = await fetch(`${this.bridgeEndpoint}balance/op`)
+      const data = await res.json()
+      return data as number
+    } catch (error) {
+      return error
+    }
+  }
+
+
   /**
+   * @deprecated
    * getContracts Returns the WBGL contract addresses on BSC, Ethereum blockchains
    */
   public async getContracts(): Promise<IContracts> {
