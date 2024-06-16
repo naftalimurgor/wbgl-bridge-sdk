@@ -1,6 +1,5 @@
+import bglunits from 'bgl-units'
 import fetch from 'node-fetch'
-import sb from 'satoshi-bitcoin'
-import Web3 from 'web3'
 import { BGLWallet } from '../BglWallet'
 import { ChainNames } from '../chains'
 import { IBridgeConfig } from '../types'
@@ -34,7 +33,7 @@ export interface BGlSwapSuccessResult {
  * @param bglFee is fee in BGL(default is .0001) an equivalent of 10,000 satoshis
  */
 export interface BGLWBGLExchangePair {
-  sourceWBGLAddress: string,
+  recepientWBGLAddress: string,
   bglAmount: number,
   bglFee?: number
 }
@@ -46,14 +45,13 @@ export class BGL {
 
   /**
    * Web3 instance to use for Interacting with WBGL contract on
-   * BSC, Ethereum, and L2 chains(coming soon)
+   * BSC, Ethereum, and L2 chains(Arbitrum, Optimism)
    */
-  private web3: Web3
 
   /**
    * Minimum Fee in satoshi units for BGL transaction
    */
-  private static minTxFee = sb.toSatoshi(0.0001) // 10,000 satoshis
+  private static minTxFee = bglunits.toSatoshiUnits(0.0001) // 10,000 satoshis
 
   /**
   * Chain Names for Network to interract with: BSC, Ethereum,
@@ -82,37 +80,37 @@ export class BGL {
   /**
    * BGL Wallet PrivateKey to use for sigining transactions
    */
-  private readonly privateKey: string | null
+  private readonly bglPrivateKey: string | null
+
 
   constructor(config: IBridgeConfig) {
-    this.web3 = new Web3(config.provider)
     this.chainName = config.chainName
     this.bridgeEndpoint = config.bridgeEndpoint || 'https://bglswap.com/app/'
-    this.bglRpcNode = config.blgRpcNode || 'https://rpc.bglwallet.io'
+    this.bglRpcNode = config.bglRpcUrl || 'https://rpc.bglwallet.io'
     this.bglWallet = new BGLWallet(config)
-    this.privateKey = config.bglPrivateKey || null
+    this.bglPrivateKey = config.bglPrivateKey || null
   }
 
   /**
    * 
    *  Send BGL to recieve WBGL tokens to complete the swap
-   * @param sourceWBGLAddress Address to send WBGL to: can be BSC address or Ethereum address
+   * @param sourceWBGLAddress Address to send WBGL to: can be BSC address or Ethereum address depending on configuration
    * @param bglAmount amount of BGL to swap for WBGL
    * @link more https://bglswap.com/
    */
   public async swapBGLforWBGL({
-    sourceWBGLAddress,
+    recepientWBGLAddress,
     bglAmount,
     bglFee
   }: BGLWBGLExchangePair) {
 
-    const fee = sb.toSatoshi(bglFee) || BGL.minTxFee
-    const amountToSwap = sb.toSatoshi(bglAmount) - fee
+    const fee = bglunits.toSatoshiUnits(bglFee) || BGL.minTxFee
+    const amountToSwap = bglunits.toSatoshiUnits(bglAmount) - fee
 
-    const bglWallet = this.privateKey ? await this.bglWallet.createWalletFromPrivateKey() : await this.bglWallet.createWalletFromMnemonic()
+    const bglWallet = this.bglPrivateKey ? await this.bglWallet.createWalletFromPrivateKey() : await this.bglWallet.createWalletFromMnemonic()
     const { address: bglSenderAddress, privateKey } = bglWallet
 
-    const WBGLSourceAddress = sourceWBGLAddress || await this.web3.eth.getAccounts()[0]
+    const WBGLSourceAddress = recepientWBGLAddress
     const bridgeResponse = await this._submitToBridge(WBGLSourceAddress, this.chainName)
 
     const {
@@ -129,16 +127,27 @@ export class BGL {
       fee
     )
 
-
     const txres = await this._broadcastbglTransaction(txObject) as BGlSwapSuccessResult
+
+    if (txres.error) {
+      return {
+        bglBridgeAddress: null,
+        currentWBGLBridgeBalance: null,
+        msg: null,
+        bglTxHash: txres.result,
+        rpcResult: txres
+      }
+    }
+
     return {
       bglBridgeAddress: bglBridgeAddress,
       currentWBGLBridgeBalance: currentWBGLBalance,
       msg: `You have successfully sent ${bglAmount} to ${bglBridgeAddress} to receive WBGL,  ${feePercentage} fee is charged. The currently available WBGL balance is ${currentWBGLBalance}. If you send more BGL than is available to complete the exchange, your BGL will be returned to your address.
-      Please note, that a fee of 1% will be automatically deducted from the transfer amount. This exchange pair is active for 7 days.`,
+        Please note, that a fee of 1% will be automatically deducted from the transfer amount. This exchange pair is active for 7 days.`,
       bglTxHash: txres.result,
       rpcResult: txres
     }
+
   }
 
   /**
@@ -290,4 +299,5 @@ export class BGL {
       console.error(error)
     }
   }
+
 }
