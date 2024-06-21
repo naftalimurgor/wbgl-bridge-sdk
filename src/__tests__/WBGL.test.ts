@@ -11,6 +11,7 @@ import { WBGLBGLExchangePair } from '../bridge/WBGL'
 
 expect.extend(matchers)
 
+console.log(process.env.evmPrivateKey)
 describe('WBGL class tests on Ethereum', () => {
 
   let WBGLInstance: WBGL
@@ -26,12 +27,12 @@ describe('WBGL class tests on Ethereum', () => {
     provider = new ethers.providers.JsonRpcProvider(bscProvider)
 
     const config: IBridgeConfig = {
-      evmPrivateKey: process.env.evmPrivateKey as string,
+      evmPrivateKey: process.env.EVM_PRIVATE_KEY as string,
       provider: provider,
       chainName: ChainNames.BNBSmartChain,
       chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: process.env.bglPrivateKey as string
+      bglPrivateKey: process.env.BGL_PRIVATE_KEY as string
     }
 
     WBGLInstance = new WBGL(config)
@@ -52,7 +53,8 @@ describe('WBGL class tests on Ethereum', () => {
       wbglAmount: 5
     }
     const tx = await WBGLInstance.swapWBGLtoBGL(wbglPair)
-    expect(tx).toBeDefined()
+    console.log(tx)
+    expect(tx.transactionHash).toBeDefined()
   })
 
 })
