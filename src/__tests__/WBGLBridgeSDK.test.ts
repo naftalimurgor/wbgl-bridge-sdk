@@ -25,12 +25,12 @@ describe('WBGLBridgeSDK base class tests on Ethereum', () => {
     provider = new ethers.providers.JsonRpcProvider(bscNodeRPC)
 
     const config: IBridgeConfig = {
-      evmPrivateKey: process.env.evmPrivateKey as string, // Arbitrum, BNB chain, Ethereum privateKey etc
+      evmPrivateKey: process.env.EVM_PRIVATEKEY as string, // Arbitrum, BNB chain, Ethereum privateKey etc
       provider: provider,
       chainName: ChainNames.Ethereum,
       chainId: ChaindIds.Ethereum,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: process.env.bglPrivateKey as string
+      bglPrivateKey: process.env.BGL_PRIVATEKEY as string
     }
 
     wBGLBridgeSDK = new WBGLBridgeSDK(config)
