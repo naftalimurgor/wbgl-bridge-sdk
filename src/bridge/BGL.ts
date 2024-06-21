@@ -12,6 +12,8 @@ import { Transaction } from './Transaction'
  * @param balance: current WBGL balance of the Bridge
  */
 interface IBridgeResponse {
+  message?: string
+  error?: string
   status: string;
   id: string;
   bglAddress: string;
@@ -113,11 +115,16 @@ export class BGL {
     const WBGLSourceAddress = recepientWBGLAddress
     const bridgeResponse = await this._submitToBridge(WBGLSourceAddress, this.chainName)
 
+
     const {
       bglAddress: bglBridgeAddress,
       feePercentage,
       balance: currentWBGLBalance
     } = bridgeResponse
+
+    if (bridgeResponse?.error) {
+      throw new Error(bridgeResponse?.message)
+    }
 
     const txObject = await this._buildBridgeTransactionObject(
       bglSenderAddress,
@@ -230,6 +237,7 @@ export class BGL {
 
     const newBGLBalanceAfterSwap = (blgSourceAddressBalance - bglAmountToSwap - bglTxFee)
 
+
     if (utxos.length) {
       for (const key in utxos) {
         const utxo = utxos[key]
@@ -256,7 +264,6 @@ export class BGL {
       let utxoCount = 0
       for (const key in utxos) {
         const utxo = utxos[key]
-        console.log(utxo)
         txObject.signInput(utxoCount, {
           privateKey: privateKey,
           value: utxo.amount
