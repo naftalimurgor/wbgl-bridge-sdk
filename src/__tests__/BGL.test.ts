@@ -30,25 +30,24 @@ describe('BGL class tests on BNB Chain', () => {
   beforeAll(async () => {
     const bscProviderRpc = 'https://rpc.ankr.com/bsc'
     // const MNEMONIC = process.env.MNEMONIC as string
-    const bglSeedPhrase = process.env.bglSeedphrase
+    const bglSeedPhrase = process.env.BGL_SEEDPHRASE
 
     const provider = new ethers.providers.JsonRpcProvider(bscProviderRpc)
     // const provider = new ethers.providers.Web3Provider(window.etherum)
 
     const config: IBridgeConfig = {
-      evmPrivateKey: process.env.privateKey as string,
+      evmPrivateKey: process.env.EVM_PRIVATE_KEY as string,
       provider: provider,
       chainName: ChainNames.BNBSmartChain,
       chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: process.env.bglPrivateKey as string,
       bglSeedPhrase: bglSeedPhrase
     }
 
     BGLInstance = new BGL(config)
     signer = new Wallet(config.evmPrivateKey, provider)
     recepientBNBAddress = await signer.getAddress()
-
+    console.log('account:', recepientBNBAddress)
   })
 
   it('test that BGL class instantiates correctly', () => {
