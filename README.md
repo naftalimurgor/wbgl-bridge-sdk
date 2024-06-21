@@ -33,12 +33,11 @@ yarn add wbgl-bridge-sdk
 
 Import the SDK into your TypeScript project to start using the Bitgesell WGL Bridge functionalities:
 
-```typescript
-import { ethers } from 'ethers'
-```
 ## Initialization
 
 ```typescript
+import { ethers } from 'ethers'
+
 import {
   ChaindIds,
   ChainNames,
