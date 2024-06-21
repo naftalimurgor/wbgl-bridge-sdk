@@ -6,8 +6,10 @@ export enum ChaindIds {
 }
 
 export enum ChainNames {
-  Ethereum = 'Ethereum',
-  BNBSmartChain = 'BNBSmartChain',
-  // Arbitrum = 'Arbitrum one',
-  // Optimism = 'OP Mainnet'
+  Ethereum = 'eth',
+  BNBSmartChain = 'bnb',
+
+  // @TODO: add support soon
+  // Arbitrum = 'arb',
+  // Optimism = 'op'
 }
