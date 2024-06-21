@@ -1,53 +1,60 @@
+import { ethers } from 'ethers'
 import * as matchers from 'jest-extended'
 
 import {
-  ChainNames,
   ChaindIds,
-  WBGL,
-  IBridgeConfig
+  ChainNames,
+  IBridgeConfig,
+  WBGL
 } from '../'
-
-import HDWalletProvider from '@truffle/hdwallet-provider'
-
+import { WBGLBGLExchangePair } from '../bridge/WBGL'
 
 expect.extend(matchers)
 
+console.log(process.env.evmPrivateKey)
 describe('WBGL class tests on Ethereum', () => {
 
-  let wBGL: WBGL
-  let web3Provider = null
-  const recepientWBGLAddress = ''
+  let WBGLInstance: WBGL
+  let provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
+  // const recepientWBGLAddress = ''
   const bglAddress = 'bgl1qh3tsz3a7l3m49xaq4xcdx8aefthchuqagmspcn'
+  let bnbAddress: string
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const bscProvider = 'https://rpc.ankr.com/bsc'
-    const MNEMONIC = process.env.MNEMONIC
+    // const MNEMONIC = process.env.MNEMONIC 
 
-    web3Provider = new HDWalletProvider(MNEMONIC, bscProvider)
+    provider = new ethers.providers.JsonRpcProvider(bscProvider)
 
     const config: IBridgeConfig = {
-      provider: web3Provider,
-      chainName: ChainNames.BinanceSmartChain,
-      chainId: ChaindIds.BinanceSmartChain,
+      evmPrivateKey: process.env.EVM_PRIVATE_KEY as string,
+      provider: provider,
+      chainName: ChainNames.BNBSmartChain,
+      chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: process.env.bglPrivateKey
+      bglPrivateKey: process.env.BGL_PRIVATE_KEY as string
     }
 
-    wBGL = new WBGL(config)
+    WBGLInstance = new WBGL(config)
+    const signer = new ethers.Wallet(config.evmPrivateKey, provider)
+    bnbAddress = await signer.getAddress()
   })
 
-  afterAll(() => {
-    web3Provider.engine.stop()
-  })
 
   it('test that WBGL instantiates correctly', () => {
-    expect(wBGL).toBeInstanceOf(WBGL)
+    expect(WBGLInstance).toBeInstanceOf(WBGL)
   })
 
-  it('should swap WBGL tokens for BGL via the Bridge', () => {
-    console.log(recepientWBGLAddress)
-    console.log(bglAddress)
-    // refer to web app implementation
+  it('should swap WBGL tokens for BGL via the Bridge', async () => {
+    // NOTE: this requires some ether/bnb to cover gas fees for WBGL token transfer
+    const wbglPair: WBGLBGLExchangePair = {
+      bglAddress: bglAddress,
+      to: bnbAddress,
+      wbglAmount: 5
+    }
+    const tx = await WBGLInstance.swapWBGLtoBGL(wbglPair)
+    console.log(tx)
+    expect(tx.transactionHash).toBeDefined()
   })
 
 })

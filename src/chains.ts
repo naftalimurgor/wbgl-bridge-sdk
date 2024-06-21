@@ -1,14 +1,15 @@
 export enum ChaindIds {
   Ethereum = '0x1',
-  BinanceSmartChain = '0x38',
+  BNBSmartChain = '0x38',
   // ArbitrumOne = '0xa4b1',
   // Optimism = 10
 }
 
 export enum ChainNames {
-  Ethereum = 'Ethereum',
-  BinanceSmartChain = 'Binance Smart Chain',
+  Ethereum = 'eth',
+  BNBSmartChain = 'bnb',
 
-  // Arbitrum = 'Arbitrum one',
-  // Optimism = 'OP Mainnet'
+  // @TODO: add support soon
+  // Arbitrum = 'arb',
+  // Optimism = 'op'
 }
