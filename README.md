@@ -3,7 +3,7 @@
 
 This is a wrapper around the WBGL bridge for use on the Nodejs backend and Browsers written in TypeScript.
 
-> NB: To access the Brigdge, we recommend visiting the official bridge at [bglswap.com](https://bglswap.com/)
+> NB: To access the Bridge, we recommend visiting the official bridge at [bglswap.com](https://bglswap.com/)
 
 
 ## Table of Contents
