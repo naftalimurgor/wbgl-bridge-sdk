@@ -22,6 +22,7 @@ export {
   ChaindIds,
   IBridgeConfig,
   IContracts,
+  WBGLBridgeSDK,
   WBGL
 }
 
