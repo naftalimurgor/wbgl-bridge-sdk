@@ -8,7 +8,11 @@ import {
   ChainNames,
   ChaindIds
 } from '../'
-import { ethers, Wallet } from 'ethers'
+
+import {
+  ethers,
+  Wallet
+} from 'ethers'
 
 
 expect.extend(matchers)
@@ -34,8 +38,8 @@ describe('BGL class tests on BNB Chain', () => {
     const config: IBridgeConfig = {
       evmPrivateKey: process.env.privateKey as string,
       provider: provider,
-      chainName: ChainNames.BinanceSmartChain,
-      chainId: ChaindIds.BinanceSmartChain,
+      chainName: ChainNames.BNBSmartChain,
+      chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
       bglPrivateKey: process.env.bglPrivateKey as string,
       bglSeedPhrase: bglSeedPhrase

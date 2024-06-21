@@ -9,7 +9,6 @@ import {
 } from '../'
 import { WBGLBGLExchangePair } from '../bridge/WBGL'
 
-
 expect.extend(matchers)
 
 describe('WBGL class tests on Ethereum', () => {
@@ -29,8 +28,8 @@ describe('WBGL class tests on Ethereum', () => {
     const config: IBridgeConfig = {
       evmPrivateKey: process.env.evmPrivateKey as string,
       provider: provider,
-      chainName: ChainNames.BinanceSmartChain,
-      chainId: ChaindIds.BinanceSmartChain,
+      chainName: ChainNames.BNBSmartChain,
+      chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
       bglPrivateKey: process.env.bglPrivateKey as string
     }
