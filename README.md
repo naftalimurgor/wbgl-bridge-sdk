@@ -1,9 +1,9 @@
 # Bitgesell WBGLBridge SDK
 <img src="Icon.png" style="height: 60px;"/>
 
-This is a tiny wrapper around the WBGL bridge for use on the Nodejs backend
+This is a wrapper around the WBGL bridge for use on the Nodejs backend and Browsers written in TypeScript.
 
-> NB: This is highly experimental and for BGL-WBGL swaps, Recommend to use the official bridge at [bglswap.com](https://bglswap.com/)
+> NB: To access the Brigdge, we recommend visiting the official bridge at [bglswap.com](https://bglswap.com/)
 
 
 ## Table of Contents
@@ -34,67 +34,68 @@ yarn add wbgl-bridge-sdk
 Import the SDK into your TypeScript project to start using the Bitgesell WGL Bridge functionalities:
 
 ```typescript
-import Web3 from 'web3'
-import PrivateKeyProvider from 'truffle-privatekey-provider'
-import { WBGLBridgeSDK, IBridgeConfig } from 'wbgl-bridge-sdk';
+import { ethers } from 'ethers'
+```
+## Initialization
 
-const bscProviderRpc = 'https://rpc.ankr.com/bsc'
-const MNEMONIC = process.env.MNEMONIC
-const bglSeedPhrase = process.env.bglSeedphrase
+```typescript
+import {
+  ChaindIds,
+  ChainNames,
+  IBridgeConfig,
+  WBGLBridgeSDK
+  BGLWBGLExchangePair,
+  WBGLBGLExchangePair,
+} from 'wbgl-bridge-sdk'
 
-web3Provider = new HDWalletProvider(MNEMONIC, bscProviderRpc)
+const provider = new ethers.providers.JsonRpcProvider(bscNodeRPC)
+const bscNodeRPC = 'https://rpc.ankr.com/bsc'
 
-// SDK config object
 const config: IBridgeConfig = {
-  provider: web3Provider,
-  chainName: ChainNames.BinanceSmartChain,
-  chainId: ChaindIds.BinanceSmartChain,
+  evmPrivateKey: process.env.EVM_PRIVATEKEY as string,
+  provider: provider,
+  chainName: ChainNames.Ethereum,
+  chainId: ChaindIds.Ethereum,
   bridgeEndpoint: 'https://bglswap.com/app/',
-  bglPrivateKey: process.env.bglPrivateKey,
-  bglSeedPhrase: bglSeedPhrase
+  bglPrivateKey: process.env.BGL_PRIVATEKEY as string
 }
 
-const accounts = await web3Instance.eth.getAccounts()
-recepientBSCAddress = accounts[0] // address 0
+const WBGLBridgeSDKInstance = new WBGLBridgeSDK(config)
 
-// Instantiate the SDK with your provider
-const wbglBridge = new WBGLBridgeSDK(config);
-
-
-// Get bridge health:
-const health = await wbglBridge.getBridgeHealth()
-console.log(health) // "ok"
-
-// Use the SDK methods to interact with the Bitgesell WBGL Bridge
-const balance = await wbglBridge.getBalanceETH();
-console.log(`WBGL on Ethereum balance: ${balance}`);
 ```
 
 ### 1.  Swap `WBGL` Tokens for `BGL`
-```javascript
-const bglAddress = '' // address to receive BGL
-const amount = 200 // WBGL amount
-const to = '' // BSC/ETH address to send tokens to
-const res = await wbglBridge.swapWBGLforBGL(bglAddress, amount, to)
+```typescript
+// address to receieve bgl from
+
+const bglAddress = 'bgl1qh3tsz3a7l3m49xaq4xcdx8aefthchuqagmspcn' 
+
+const wbglPair: WBGLBGLExchangePair = {
+  bglAddress: bglAddress,
+  wbglAmount: 5
+}
+const swapResult = await WBGLBridgeSDKInstance.swapWBGLtoBGL(wbglPair)
+console.log(swapResult)
 ```
 
-### 2. Swap `BGL` for `WBGL` Tokens to BSC/Ethereum address
+### 2. Swap `BGL` for `WBGL` Tokens to BSC/Ethereum account
 
 ```typescript
-const blgAmountToSwap = 2 // 2BGL
-const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
+const blgAmountToSwap = 1 // 1BGL
+const bglTxFee = 0.0001 // A minimum txFee of proposed 10,000 satoshis(0.0001BGL)
+
+const recepientBNBAddress = '0x309C7057d20EC9EB67b21005972fF19965483Fbf'
 
 const bGLWBGLExchangePair: BGLWBGLExchangePair = {
-  sourceWBGLAddress: recepientBSCAddress,
+  recepientWBGLAddress: recepientBNBAddress,
   bglAmount: blgAmountToSwap,
   bglFee: bglTxFee
 }
 
-const swapResult = await bGL.swapBGLforWBGL(bGLWBGLExchangePair)
+const swapResult = await BGLInstance.swapBGLforWBGL(bGLWBGLExchangePair)
 console.log(swapResult)
-
 ```
-On a sucessful swap: 
+On a sucessful swap:
 
 ```javascript
 {
@@ -113,25 +114,23 @@ On a sucessful swap:
 
 ## Roadmap
 
-This library is in active development with implemented functions as follows:
+This library is in active development(currently in Beta!) with implemented functions as follows:
 
-### Bridgle methods
+### API
 
-The following methods have been implemented and tested with coverage:
+The following methods have been implemented and tested with coverage on `Ethereum` and `BNBSmartChain`:
 
-- [x] `getBridgeHealth()`
-- [x] `getBridgeStatus()`
 - [x] `getBalanceBGL()`
-- [x] `getBalanceETH()`
-- [x] `getBalanceBSC()`
-- [x] `getContracts()`
-
-### Swap Methods(in Development)
-
-Swap methods for bridge functionality currently in development []():
+- [x] `getBalanceEthereum)`
+- [x] `getBalanceBNBChain()`
+- [x] `getBalanceArbitrumChain()`
+- [x] `getBalanceOptimismChain()`
 
 - [x] `swapBGLforBGL(bGLWBGLExchangePair: BGLWBGLExchangePair)`
-- [x] `swapWBGLforBGL(wBGLBGLExchangePair: BGLWBGLExchangePair)`
+- [x] `swapWBGLToBGL(wBGLBGLExchangePair: BGLWBGLExchangePair)`
+- [] `getContracts()`
+- [] `getBridgeHealth()`
+- [] `getBridgeStatus()`
 
 ## Documentation
 
@@ -139,6 +138,7 @@ For more in-depth information on the SDK's methods, classes, and usage, refer to
 
 ## Contribution Guidelines
 
+1. Contributions are welcome with tests to keep the coverage high
 We welcome contributions! Feel free to submit a feature request/file an issue etc.
 
 ## License
