@@ -8,7 +8,7 @@ export interface IBridgeConfig {
   provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
   chainName: string | ChainNames
   chainId: number | ChaindIds
-  bglPrivateKey: string
+  bglPrivateKey?: string
   evmPrivateKey: string
   bglSeedPhrase?: string
   bridgeEndpoint?: string
