@@ -30,7 +30,8 @@ describe('BGL class tests on BNB Chain', () => {
   beforeAll(async () => {
     const bscProviderRpc = 'https://rpc.ankr.com/bsc'
     // const MNEMONIC = process.env.MNEMONIC as string
-    const bglSeedPhrase = process.env.BGL_SEEDPHRASE
+    // const bglSeedPhrase = process.env.BGL_SEEDPHRASE
+    const bglPrivateKey = process.env.BGL_PRIVATEKEY_OR_SEED
 
     const provider = new ethers.providers.JsonRpcProvider(bscProviderRpc)
     // const provider = new ethers.providers.Web3Provider(window.etherum)
@@ -41,7 +42,8 @@ describe('BGL class tests on BNB Chain', () => {
       chainName: ChainNames.BNBSmartChain,
       chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglSeedPhrase: bglSeedPhrase
+      // bglSeedPhrase: bglSeedPhrase
+      bglPrivateKeyOrSeed: bglPrivateKey as string
     }
 
     BGLInstance = new BGL(config)
@@ -55,12 +57,12 @@ describe('BGL class tests on BNB Chain', () => {
   })
 
   it('should swap BGL for WBGL Tokens', async () => {
-    const blgAmountToSwap = 1 // 1BGL
+    const bglAmountToSwap = 1 // 1BGL
     const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
 
     const bGLWBGLExchangePair: BGLWBGLExchangePair = {
       recepientWBGLAddress: recepientBNBAddress,
-      bglAmount: blgAmountToSwap,
+      bglAmount: bglAmountToSwap,
       bglFee: bglTxFee
     }
 

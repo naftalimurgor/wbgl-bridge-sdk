@@ -58,7 +58,7 @@ export class WBGL {
    * @param wbglAmount amount of WBGL tokens to swap
    * swapWBGLforBGL swaps WBGL for BGL to recepient Bitgesell address
    */
-  public async swapWBGLtoBGL({
+  public async swapWBGLforBGL({
     bglAddress,
     wbglAmount,
   }: WBGLBGLExchangePair): Promise<WBGLBGLExchangePairResult> {

@@ -79,18 +79,11 @@ export class BGL {
    */
   private bglRpcNode: string
 
-  /**
-   * BGL Wallet PrivateKey to use for sigining transactions
-   */
-  private readonly bglPrivateKey: string | null
-
-
   constructor(config: IBridgeConfig) {
     this.chainName = config.chainName
     this.bridgeEndpoint = config.bridgeEndpoint || 'https://bglswap.com/app/'
     this.bglRpcNode = config.bglRpcUrl || 'https://rpc.bglwallet.io'
     this.bglWallet = new BGLWallet(config)
-    this.bglPrivateKey = config.bglPrivateKey || null
   }
 
   /**
@@ -109,7 +102,7 @@ export class BGL {
     const fee = bglunits.toSatoshiUnits(bglFee) || BGL.minTxFee
     const amountToSwap = bglunits.toSatoshiUnits(bglAmount) - fee
 
-    const bglWallet = this.bglPrivateKey ? await this.bglWallet.createWalletFromPrivateKey() : await this.bglWallet.createWalletFromMnemonic()
+    const bglWallet = await this.bglWallet.createWallet()
     const { address: bglSenderAddress, privateKey } = bglWallet
 
     const WBGLSourceAddress = recepientWBGLAddress
