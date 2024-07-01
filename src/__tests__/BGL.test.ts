@@ -57,12 +57,12 @@ describe('BGL class tests on BNB Chain', () => {
   })
 
   it('should swap BGL for WBGL Tokens', async () => {
-    const blgAmountToSwap = 1 // 1BGL
+    const bglAmountToSwap = 1 // 1BGL
     const bglTxFee = 0.0001 // minimum txFee of proposed 10,000 satoshis(0.0001BGL)
 
     const bGLWBGLExchangePair: BGLWBGLExchangePair = {
       recepientWBGLAddress: recepientBNBAddress,
-      bglAmount: blgAmountToSwap,
+      bglAmount: bglAmountToSwap,
       bglFee: bglTxFee
     }
 
