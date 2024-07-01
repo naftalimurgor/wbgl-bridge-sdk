@@ -30,7 +30,7 @@ describe('WBGLBridgeSDK base class tests on Ethereum', () => {
       chainName: ChainNames.Ethereum,
       chainId: ChaindIds.Ethereum,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglPrivateKey: process.env.BGL_PRIVATEKEY as string
+      bglPrivateKeyOrSeed: process.env.BGL_PRIVATEKEY_OR_SEED as string
     }
 
     wBGLBridgeSDK = new WBGLBridgeSDK(config)

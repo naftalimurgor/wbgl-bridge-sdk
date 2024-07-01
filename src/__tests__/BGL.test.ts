@@ -30,7 +30,8 @@ describe('BGL class tests on BNB Chain', () => {
   beforeAll(async () => {
     const bscProviderRpc = 'https://rpc.ankr.com/bsc'
     // const MNEMONIC = process.env.MNEMONIC as string
-    const bglSeedPhrase = process.env.BGL_SEEDPHRASE
+    // const bglSeedPhrase = process.env.BGL_SEEDPHRASE
+    const bglPrivateKey = process.env.BGL_PRIVATEKEY_OR_SEED
 
     const provider = new ethers.providers.JsonRpcProvider(bscProviderRpc)
     // const provider = new ethers.providers.Web3Provider(window.etherum)
@@ -41,7 +42,8 @@ describe('BGL class tests on BNB Chain', () => {
       chainName: ChainNames.BNBSmartChain,
       chainId: ChaindIds.BNBSmartChain,
       bridgeEndpoint: 'https://bglswap.com/app/',
-      bglSeedPhrase: bglSeedPhrase
+      // bglSeedPhrase: bglSeedPhrase
+      bglPrivateKeyOrSeed: bglPrivateKey as string
     }
 
     BGLInstance = new BGL(config)
