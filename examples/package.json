@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "ethers": "^5.7.0",
-    "wbgl-bridge-sdk": "file:wbgl-bridge-sdk-5.0.4.tgz"
+    "wbgl-bridge-sdk": "^5.0.5"
   },
   "devDependencies": {
     "dotenv": "^16.4.5"
