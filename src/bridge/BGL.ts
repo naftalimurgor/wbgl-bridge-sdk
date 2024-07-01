@@ -103,7 +103,6 @@ export class BGL {
     const amountToSwap = bglunits.toSatoshiUnits(bglAmount) - fee
 
     const bglWallet = await this.bglWallet.createWallet()
-    console.log('wallet:', bglWallet)
     const { address: bglSenderAddress, privateKey } = bglWallet
 
     const WBGLSourceAddress = recepientWBGLAddress
