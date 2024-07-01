@@ -47,21 +47,57 @@ import {
   WBGLBGLExchangePair,
 } from 'wbgl-bridge-sdk'
 
-const provider = new ethers.providers.JsonRpcProvider(bscNodeRPC)
-const bscNodeRPC = 'https://rpc.ankr.com/bsc'
+  const bscProvider = 'https://rpc.ankr.com/bsc'
+  const provider = new ethers.providers.JsonRpcProvider(bscProvider)
+  const evmPrivateKey = process.env.EVM_PRIVATE_KEY
+  const signer = new ethers.Wallet(evmPrivateKey, provider)
+  const bnbAddress = await signer.getAddress()
+
 
 const config: IBridgeConfig = {
-  evmPrivateKey: process.env.EVM_PRIVATEKEY as string,
-  provider: provider,
-  chainName: ChainNames.Ethereum,
-  chainId: ChaindIds.Ethereum,
-  bridgeEndpoint: 'https://bglswap.com/app/',
-  bglPrivateKey: process.env.BGL_PRIVATEKEY as string
+  evmPrivateKey: evmPrivateKey, // Arbitrum, BNB chain, Ethereum privateKey etc
+    provider: provider,
+    chainName: ChainNames.Ethereum,
+    chainId: ChaindIds.Ethereum,
+    bridgeEndpoint: 'https://bglswap.com/app/',
+    bglPrivateKeyOrSeed: process.env.BGL_PRIVATEKEY_OR_SEED
 }
 
 const WBGLBridgeSDKInstance = new WBGLBridgeSDK(config)
 
 ```
+Using `commonjs` `require`:
+```javascript
+const {
+  ChainNames,
+  WBGLBridgeSDK,
+  ChaindIds
+} = require('wbgl-bridge-sdk')
+
+const { ethers } = require('ethers')
+// for env secrets:
+const dotenv = require('dotenv')
+  const bscProvider = 'https://rpc.ankr.com/bsc'
+  const provider = new ethers.providers.JsonRpcProvider(bscProvider)
+
+  const evmPrivateKey = process.env.EVM_PRIVATE_KEY
+  console.log(evmPrivateKey)
+  const signer = new ethers.Wallet(evmPrivateKey, provider)
+  const bnbAddress = await signer.getAddress()
+
+
+  const config = {
+    evmPrivateKey: evmPrivateKey, // Arbitrum, BNB chain, Ethereum privateKey etc
+    provider: provider,
+    chainName: ChainNames.Ethereum,
+    chainId: ChaindIds.Ethereum,
+    bridgeEndpoint: 'https://bglswap.com/app/',
+    bglPrivateKeyOrSeed: process.env.BGL_PRIVATEKEY_OR_SEED
+  }
+  const wbglBridgesdkInstance = new WBGLBridgeSDK(config)
+  
+```
+## Swap methods
 
 ### 1.  Swap `WBGL` Tokens for `BGL`
 ```typescript
@@ -73,7 +109,7 @@ const wbglPair: WBGLBGLExchangePair = {
   bglAddress: bglAddress,
   wbglAmount: 5
 }
-const swapResult = await WBGLBridgeSDKInstance.swapWBGLtoBGL(wbglPair)
+const swapResult = await WBGLBridgeSDKInstance.swapWBGLforBGL(wbglPair)
 console.log(swapResult)
 ```
 
@@ -134,6 +170,8 @@ The following methods have been implemented and tested with coverage on `Ethereu
 ## Documentation
 
 For more in-depth information on the SDK's methods, classes, and usage, refer to the [official documentation](https://naftalimurgor.github.io/wbgl-brigde-sdk/).
+
+Note: For a complete example see `/examples/` 
 
 ## Contribution Guidelines
 
