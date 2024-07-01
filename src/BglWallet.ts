@@ -31,7 +31,6 @@ export class BGLWallet {
         return wallet
       }
     } catch (error) {
-      console.log(error)
       return error
     }
   }
@@ -86,7 +85,6 @@ export class BGLWallet {
 
       const wallet = new globalThis.Wallet({ from: this.privateKeyOrSeed })
       const address = wallet.getAddress(indexAddress) // index address
-      // console.log('privateKey', address.privateKey)
       return {
         address: address.address,
         wallet,
